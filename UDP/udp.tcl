@@ -1,0 +1,51 @@
+#Create a ns object
+set ns [new Simulator]
+ 
+$ns color 1 Blue
+$ns color 2 Red
+ 
+# Open the Trace files
+set TraceFile [open outudp.tr w]
+$ns trace-all $TraceFile
+ 
+# Open the NAM trace file
+set NamFile [open outudp.nam w]
+$ns namtrace-all $NamFile
+ 
+set n0 [$ns node]
+set n1 [$ns node]
+ 
+$ns duplex-link $n0 $n1 1Mb 20ms DropTail
+$ns duplex-link-op $n0 $n1 orient right-down
+ 
+#UDP N1 and N5
+set udp [new Agent/UDP]
+$ns attach-agent $n0 $udp
+set null [new Agent/Null]
+$ns attach-agent $n1 $null
+$ns connect $udp $null
+$udp set fid_ 2
+ 
+#CBR N1 and N5
+set cbr [new Application/Traffic/CBR]
+$cbr attach-agent $udp
+$cbr set type_ CBR
+#$cbr set packet_size_ 800
+#$cbr set interval_ 0.005
+ 
+#$ns duplex-link-op $n0 $n1 queuePos 0.5
+
+$ns at 0.1 "$cbr start"
+$ns at 50.0 "$cbr stop"
+ 
+proc finish {} {
+	global ns TraceFile NamFile
+	$ns flush-trace
+	close $TraceFile
+	close $NamFile
+	exec nam outudp.nam &
+	exit 0
+}
+ 
+$ns at 55.0 "finish"
+$ns run

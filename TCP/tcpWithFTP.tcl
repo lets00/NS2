@@ -36,14 +36,16 @@ $tcp1 set fid_ 1
 #TCP N0 and N4
 set ftp [new Application/FTP]
 $ftp attach-agent $tcp1
-$ftp set type_ FTP
+#$ftp set type_ FTP
 #$ftp1 set window_ 1000
  
  
 $ns at 0.1 "$ftp start"
-$ns at 0.2 "$ftp send 52428800"
-$ns at 0.3 "$ftp send 1024"
-$ns at 50.0 "$ftp stop"
+$ns at 0.2 "$ftp send 1024"
+$ns at 0.3 "$ftp send 2048"
+#$ns at 0.2 "$ftp send 102400"
+#$ns at 0.3 "$ftp send 50000"
+#$ns at 100.0 "$ftp stop"
  
 proc finish {} {
 	global ns TraceFile NamFile
@@ -54,5 +56,5 @@ proc finish {} {
 	exit 0
 }
 
-$ns at 55.0 "finish"
+$ns at 1500.0 "finish"
 $ns run
